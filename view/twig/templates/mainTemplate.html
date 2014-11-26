@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+	{% include 'header.html' with {'title':'Knihovna'} %}
+	<link rel="stylesheet" type="text/css" href="view/css/style_main.css">
+</head>
+<body>
+	<div id="frame">
+		<header>
+			<h1><span>univerzitní</span><br>KNIHOVNA</h1>
+		</header>
+		<div id="main">
+			{% set page = url[0] %}
+			<nav id="top">	
+				<ul class="clearfix">					
+					{% if username is empty %}
+						<!-- neprihlasen -->
+						<li {{ page == 'browsing' ? 'class="polovina active" ' : 'class="polovina"' }} data-link="browsing"><a href="browsing/">prohlížení</a></li>
+						<li {{ page == 'contact' ? 'class="polovina active"' : 'class="polovina"' }} data-link="contact"><a href="contact/">kontakt</a></li>
+							
+					{% else %}
+						<!-- prihlasen -->
+						<li {{ page == 'browsing' ? 'class="tretina active" ' : 'class="tretina"' }} data-link="browsing"><a href="browsing/">prohlížení</a></li>
+
+						{% if admin == '0' %}
+							<li {{ page == 'account' ? 'class="tretina active" ' : 'class="tretina"' }} data-link="account"><a href="account/">účet</a></li>
+						{% else %}
+							<li {{ page == 'administration' ? 'class="tretina active" ' : 'class="tretina"' }} data-link="administration"><a href="administration/">administrace</a></li>
+						{% endif %}
+
+
+						<li {{ page == 'contact' ? 'class="tretina active"' : 'class="tretina"' }} data-link="contact"><a href="contact/">kontakt</a></li>
+					{% endif %}		
+				</ul>
+			</nav>
+			<div id="content">
+				<div>
+					<div>
+
+					{% if my_error_message is defined and my_error_message|length > 0 %}
+						<div class="error_message">{{ my_error_message|raw }}</div>
+					{% endif %}
+
+					{% if page == 'browsing' %}
+					<!-- browsing -->
+						{% include 'forms/search_form.html' with {'zanry':zanry} %}
+						<h2 class="nadpis">Seznam nabízených exemplářů</h2>
+						<div class="y_scrollable">
+							<div class="bubble"></div>
+							<table class="table-striped table_vypis">
+								<tr>
+									<th>ID</th>
+									<th>Název knihy</th>
+									<th>Autoři knihy</th>
+									<th>Žánr</th>
+									<th>Rok vydání</th>
+									<th>Stav, k dispozici dne</th>
+									<th></th>
+								</tr>
+							
+							{% for kniha in knihy %}
+						        <tr class="tr_clickable">
+						        	<td>{{kniha['id_exemplare']}}</td>
+						        	<td>{{kniha['nazev_knihy']}}</td>
+						        	<td>{{kniha['jmeno_autora'] | raw}}</td>
+						        	<td>{{kniha['zanr'] | raw}}</td>
+						        	<td>{{kniha['rok_vydani']}}</td>
+						        	<td>{{kniha['stav']}}</td>
+									<td>
+										{% if kniha['stav'] in 'k dispozici' and username|length > 0 and admin == '0' %}
+											<a {{ 'href=browsing/' ~ kniha['id_exemplare'] | raw }} >vypůjčit</a>
+										{% endif %}
+						        	</td>
+						        </tr>
+						        <tr>
+						        	<td colspan="7">{{ kniha['popis'] is empty ? 'Chybí popisek knihy.' : kniha['popis'] }} <span class="mezera"></span>
+						        		věková hranice: {{ kniha['vek'] is empty ? 'není určena' : kniha['vek'] ~ '+' }}</td>
+						        </tr>
+						    {% endfor %}
+						
+							</table>
+						</div>
+
+					{% elseif page == 'account' %}
+					<!-- account -->
+
+						{% if url[1] is defined and url[1]|length > 0 and url[1] == 'edit' %}
+
+							<br><h2>{{ user["jmeno"] }}</h2>
+							<span> {{ user["username"] }} </span> <br>
+							<form method="post" id="opravny_form">
+								<input type="date" name="oprava_ucet[datum_narozeni]" placeholder="datum narození" value="{{user['datum_narozeni']}}" required>
+								<input type="email" name="oprava_ucet[email]" placeholder="e-mail" value="{{user['email']}}" required>
+								<input type="text" name="oprava_ucet[bydliste_adresa]" placeholder="adresa" value="{{user['bydliste_adresa']}}" required>
+								<input type="text" name="oprava_ucet[bydliste_mesto]" placeholder="město" value="{{user['bydliste_mesto']}}" required>
+								<input type="password" name="oprava_ucet[passwd]" placeholder="heslo" id="input_heslo" required>
+								<input type="password" placeholder="heslo" required>
+								<input type="submit" class="warning" name="oprava_submit" value="Opravit">
+							</form>
+						{% else %}	
+
+						  	<section id="info" class="informace clearfix">
+								<h2>{{ user["jmeno"] }}</h2>
+								<span> {{ user["username"] }} </span> <br><br>
+
+								<table>
+									<tr><td>Datum narození: </td><td>{{ user["datum_narozeni"] }}</td></tr>
+									<tr><td>Email: </td><td>{{ user["email"] }}</td></tr>
+									<tr>
+										<td>Bydliště: </td>
+										<td>{{ user["bydliste_adresa"] ~ ', ' ~ user["bydliste_mesto"] }}</td>
+									</tr>
+									<tr><td colspan="2"><a href="account/edit/" class="opravny_link">upravit</a></td></tr>
+								</table>
+							</section>
+							
+							<table class="table-striped" id="vypis_vypujcek">
+								<tr><th>Název knihy</th><th>Deadline</th><th>Zbývá</th><th>Dluh</th></tr>
+								{% for kniha in knihy %}
+							        <tr>
+							        	<td>{{kniha['nazev_knihy'] ~ ' (' ~ kniha['rok_vydani'] ~ ')'}}</td>
+							        	<td>{{kniha['deadline']}}</td>
+							        	<td {{kniha['zbyva_dni'] < 0 ? 'class="negative" ' : '' }}>{{kniha['zbyva_dni']}} dnů</td>
+							        	<td>{{kniha['dluh']}}</td>
+							        </tr>
+							    {% endfor %}
+
+							</table>
+
+						{% endif %}
+
+					{% elseif page == 'administration' %}
+						<ul id="adminMenu">
+							<li {{ url[1] == 'new' ? 'class="active"' : '' }}><a href="administration/new/">Nová výpůjčka</a></li>
+							<li {{ url[1] == 'actual' ? 'class="active"' : '' }}><a href="administration/actual/">Zobrazit výpůjčky</a></li>
+							<li {{ url[1] == 'edit' ? 'class="active"' : '' }}><a href="administration/edit/">Upravit databázi</a>
+								<ul id="tables_submenu">
+									{% for table in tables %}
+										<li><a href="administration/edit/{{table}}">{{table}}</a></li>
+									{% endfor %}
+								</ul>
+							</li>
+						</ul>
+						
+						
+						{% if url[1] == 'actual' %}
+							<h2 class="nadpis">Seznam výpůjček</h2>
+							<table class="table-striped">
+							<tr>
+								<th>ID exempláře</th>
+								<th>Název knihy</th>
+								<th>Jméno čtenáře</th>
+								<th>Zbývá dní</th>
+								<th>Dluh</th>
+								<th>Datum vpůjčení</th>
+								<th>Datum vrácení</th>
+								<th>odstranit</th>
+							</tr>
+
+								{% for vypujcka in deadlines %}
+									<tr>
+							        	<td>{{vypujcka['id_exemplare']}}</td>
+							        	<td>{{vypujcka['nazev_knihy']}}</td>
+							        	<td>{{vypujcka['jmeno_ctenare']}}</td>
+							        	<td>{{vypujcka['zbyva_dni'] | raw}}</td>
+							        	<td>{{vypujcka['dluh']}}</td>
+							        	<td>{{vypujcka['vypujceno']}}</td>
+							        	<td>{{vypujcka['vratit']}}</td>
+							        	<td><a class="warning" {{ 'href=administration/actual/' ~ vypujcka['id_exemplare'] | raw }} >odstranit</a></td>
+							        </tr>
+								{% endfor %}
+							</table>
+ 
+						{% elseif url[1] == 'edit' %}
+								
+							
+							{% if url[2]|length <= 0 %}
+								<h2 class="nadpis">Úprava databázových záznamů</h2>
+								<p id="p_message">Nebyla vybrána žádná tabulka.</p>
+							{% else %}
+								<h2 class="nadpis">Úprava databázových záznamů <em>{{url[2]}}</em></h2>
+								{% if url[3] is not defined or url[3]|length <= 0 %}
+									<!-- needitujeme radek, vypisujeme tabulku -->
+
+									<a class="show_form">přidat záznam</a>
+									<div class="skryty_form">
+										<h3>Vložení nového záznamu</h3>
+										<form method="post" id="opravny_form">
+											<input type="hidden" name="novy[tabulka]" value={{url[2]}}>
+											
+											{% if url[2] == 'knihy_has_autori' %}
+												<label for="novy[autori_id_autori]">autor</label>
+												<select name="novy[autori_id_autori]">
+													{% for autor in autori %}
+														<option label={{autor["id_autori"]}} value={{autor["id_autori"]}}>{{autor["jmeno_autora"]}}</option>
+													{% endfor %}
+												</select>
+
+												<label for="novy[knihy_id_knihy]">kniha</label>
+												<select name="novy[knihy_id_knihy]">
+													{% for kniha in knihy %}
+														<option label={{kniha["id_knihy"]}} value={{kniha["id_knihy"]}}>{{kniha["nazev"]}}</option>
+													{% endfor %}
+												</select>
+											{% elseif url[2] == 'knihy_has_zanry' %}
+												<label for="novy[zanry_id_zanry]">žánr</label>
+												<select name="novy[zanry_id_zanry]">
+													{% for zanr in zanry %}
+														<option label={{zanr["id_zanry"]}} value={{zanr["id_zanry"]}}>{{zanr["nazev"]}}</option>
+													{% endfor %}
+												</select>
+
+												<label for="novy[knihy_id_knihy]">kniha</label>
+												<select name="novy[knihy_id_knihy]">
+													{% for kniha in knihy %}
+														<option label={{kniha["id_knihy"]}} value={{kniha["id_knihy"]}}>{{kniha["nazev"]}}</option>
+													{% endfor %}
+												</select>
+											{% elseif url[2] == 'exemplare' %}
+												<label for="novy[id_knihy]">id_knihy</label>
+												<select name="novy[id_knihy]">
+													{% for kniha in knihy %}
+														<option label={{kniha["id_knihy"]}} value={{kniha["id_knihy"]}}>{{kniha["nazev"]}}</option>
+													{% endfor %}
+												</select>
+											{% else %}
+												{% set id_table = 'id_' ~ url[2] %}
+												{% for col in columns %}
+													{% if col["Field"] != id_table %}
+														<label for=novy[{{col["Field"]}}]>{{col["Field"]}}</label>
+
+														{% set typ = col["Field"] %}
+														{% if 'datum' in typ %}
+															<input type="date" name=novy[{{col["Field"]}}] placeholder={{col["Field"]}} required>
+														{% elseif 'email' in typ %}
+															<input type="email" name=novy[{{col["Field"]}}] placeholder={{col["Field"]}} required>
+														{% elseif 'passwd' in typ %}
+															<input type="password" name=novy[{{col["Field"]}}] placeholder={{col["Field"]}} required>
+														{% else %}
+															<input type="text" name=novy[{{col["Field"]}}] placeholder={{col["Field"]}} required>
+														{% endif %}
+													{% endif %}
+												{% endfor %}
+											{% endif %}
+											<label for="novy_submit"></label>
+											<input type="submit" name="novy_submit" value="Přidat">
+										</form>
+									</div>
+									
+									<div class="y_scrollable">
+										<table id="table_edit" class="table-striped">
+											<tr>
+												{% for col in columns %}
+													<th>{{col["Field"]}}</th>
+												{% endfor %}
+												
+												{% if (url[2] !=  'knihy_has_autori') and (url[2] !=  'knihy_has_zanry')  %}
+													<th></th>
+												{% endif %}
+											</tr>
+											{% for row in table %}
+												<tr>
+										        	{% for item in row %}
+														<td>{{item}}</td>
+													{% endfor %}
+													
+													{% set odkaz='administration/edit/' ~ url[2] ~ "/" ~ row[columns[0]["Field"]] %}
+													{% if (url[2] !=  'knihy_has_autori') and (url[2] != 'knihy_has_zanry')  %}
+														<td>
+															<a {{ 'href=' ~ odkaz | raw }}>upravit</a>
+														</td>
+													{% endif %}
+										        </tr>
+											{% endfor %}
+										</table>
+									</div>
+								{% else %}
+									{% if columns is defined %}
+										<h3>Úprava záznamu tabulky {{url[2]}}</h3>
+										<form id="opravny_form" method="post">
+											<input type="hidden" name="oprava[tabulka]" value={{url[2]}}>
+											{% set id_table = 'id_' ~ url[2] %}
+											{% for col in columns %}
+												{% if col["Field"] != id_table %}
+													<label for=oprava[{{col["Field"]}}]>{{col["Field"]}}</label>
+													{% if 'datum' in col["Field"] %}
+														<input type="date" placeholder={{col["Field"]}} value="{{zaznam[col['Field']]|date('Y-m-d')}}">
+													{% elseif 'obsah' in col["Field"] %}
+														<textarea name=oprava[{{col["Field"]}}] required>{{zaznam[col['Field']]|raw}}</textarea>
+													{% else %}
+														<input type="text" name=oprava[{{col["Field"]}}] placeholder={{col["Field"]}} value="{{zaznam[col['Field']]|raw}}" required>
+													{% endif %}
+												{% else %}
+													<input type="hidden" name=oprava[{{col["Field"]}}] placeholder={{col["Field"]}} value="{{zaznam[col['Field']]|raw}}">
+												{% endif %}
+											{% endfor %}
+											<label for=oprava[{{col["Field"]}}]></label>
+											<input type="submit" class="warning" value="Potvrdit" name={{'submit_oprava'}}>
+											<label for=oprava[{{col["Field"]}}]>
+											</label><input type="submit" class="warning delete_input" value="Odstranit záznam" name={{'submit_oprava_delete'}}>
+										</form>
+									{% else %}
+										<div class="error_message">Neplatná volba.</div>
+									{% endif %}	
+
+								{% endif %}
+								
+							{% endif %}
+
+						{% elseif url[1] == 'new' %}
+							<h2 class="nadpis">Nová výpůjčka</h2>
+							<form method="post" id="opravny_form">
+								<label for="nova_vypujcka[id_ctenare]">čtenář</label>
+								<select name="nova_vypujcka[id_ctenare]">
+									{% for ctenar in ctenari %}								
+										<option label={{ctenar["id_ctenari"]}} value={{ctenar["id_ctenari"]}}>{{ctenar["jmeno_ctenare"] ~ ' (' ~ ctenar["username"] ~ ')'}}</option>
+									{% endfor %}
+								</select>
+
+								<label for="nova_vypujcka[id_exemplare]">exemplář</label>
+								<select name="nova_vypujcka[id_exemplare]">
+									{% for exemplar in exemplare %}								
+										<option label={{exemplar["id_exemplare"]}} value={{exemplar["id_exemplare"]}}>{{exemplar["nazev"]}}{{  exemplar["rok_vydani"]|length > 0 ? " (" ~ exemplar["rok_vydani"] ~ ")" : '' }} (#{{exemplar["id_exemplare"]}})</option>
+									{% endfor %}
+								</select>
+
+								<label for="nova_vypujcka_submit"></label><input type="submit" name="nova_vypujcka_submit" value="vytvořit">
+							</form>
+						{% endif %}
+
+					{% elseif page == 'contact' %}
+					<!-- contact -->
+
+						<section id="kontakt" class=" informace clearfix">
+							<h2>Univerzitní knihovna</h2>
+							<section>
+								<h3>Info</h3>
+								<p>Jsme moderní knihovna. Najdeš u nás málo knih, zato máme cool webovky!</p><br>
+								<address>
+									Univerzitní 18, Plzeň <br>
+									knihovna@univerzita.cz
+								</address>
+								<table>
+									<tr><th>Den</th><th>Čas</th></tr>
+									<tr><td>Po-Pá</td><td>7 — 16:00</td></tr>
+									<tr><td>So-Ne</td><td>NON-STOP</td></tr>
+									<tr><td></td><td>(pohotovost)</td></tr>
+								</table>
+							</section>
+							<section>
+								<h3>Kde nás najdete?</h3>
+								<img src="view/images/mapa.png" alt="map">
+							</section>
+						</section>
+
+						<div id="galerie">
+							<a href="view/images/photos/hires/1.jpg" data-lightbox="knihvna"><img src="view/images/photos/m/1.jpg" alt="photo1"></a>
+							<a href="view/images/photos/hires/2.jpg" data-lightbox="knihvna"><img src="view/images/photos/m/2.jpg" alt="photo2"></a>
+							<a href="view/images/photos/hires/3.jpg" data-lightbox="knihvna"><img src="view/images/photos/m/3.jpg" alt="photo3"></a>
+							<a href="view/images/photos/hires/4.jpg" data-lightbox="knihvna"><img src="view/images/photos/m/4.jpg" alt="photo4"></a>
+						</div>
+
+						<div id="comments">
+							<h3>Názory a připomínky</h3>
+							<table>
+								{% for koment in komentare %}
+									<tr>
+										<td><span class="koment_autor">{{koment["autor"]}}</span>, <span>{{koment["datum"]}}</span></td>
+									</tr>
+									<tr>
+										<td>{{koment["obsah"]|raw}}</td>
+									</tr>
+								{% endfor %}
+							</table>
+							<form id="kom" method="post">
+								<h4>Přidat příspěvek</h4>
+								<div class="clearfix"><input type="text" name="novy_komentar[autor]" placeholder="alias" required>
+								<input type="submit" name="submit_novy_komentar" value="vložit příspěvek"></div>
+								<textarea class="komentare" id="komentar_obsah" name="novy_komentar[obsah]"></textarea>
+								<output></output>
+							</form>
+						</div>
+		
+					{% endif %}
+					
+				</div>
+
+				<div id="footer">
+					{% if username is empty %}
+						<a href="index/">ÚVODNÍ STRÁNKA</a>	
+					{% else %}
+						<a href="view/php/logout.php">ODHLÁSIT SE</a>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer>
+		<article>
+			<h4>Author</h4>
+			<p>Design &amp; code by &copy; Ondřej Pittl</p>
+			<p><a href="http://ondrejpittl.cz" target="_blank">ondrejpittl.cz</a></p>
+			<p>
+				<a href="http://www.facebook.com/ondrej.pittl" target="_blank"><img src="view/images/facebook.png" alt="fb_icon"></a>
+				<a href="http://instagram.com/ondrejpittl" target="_blank"><img src="view/images/instagram.png" alt="instagram_icon"></a>
+				<a href="http://foursquare.com/ondrejpittl" target="_blank"><img src="view/images/foursquare.png" alt="4square_icon"></a>
+				<a href="http://ondrejpittl.cz" target="_blank"><img src="view/images/op.png" alt="op_icon"></a>
+			</p>
+		</article>
+	</footer>
+</div>	
+	<script type="text/javascript" src="view/libs/jquery.js"></script>
+	<script type="text/javascript" src="view/libs/jquery.cookie/jquery.cookie.js"></script>
+	<script type="text/javascript" src="view/libs/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="view/libs/lightbox/js/lightbox.min.js"></script>
+	<script type="text/javascript" src="view/libs/tinymce/tinymce.min.js"></script>
+	<script type="text/javascript" src="view/js/script.js"></script>
+</body>
+</html>
