@@ -1,0 +1,361 @@
+html, body {
+	width: 100%; height:100%;
+	font-family: 'open_sanslight';
+	padding: 0;
+}
+
+html {
+	overflow-y:scroll;
+}
+
+::-moz-selection {
+    background-color: #890c0f;
+    color: #fff;
+}
+
+::selection {
+    background-color: #890c0f;
+    color: #fff;
+}
+
+header, nav, ul {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
+a {
+	text-decoration: none;
+	color: #000;
+}
+
+a:hover {
+	text-decoration: none;
+	color: #000;
+}
+
+
+body { 
+	background: url('../images/bg.jpg') no-repeat center center fixed; 
+  	-webkit-background-size: cover;
+  	-moz-background-size: cover;
+  	-o-background-size: cover;
+  	background-size: cover;
+  	text-align: center;
+}
+
+ul {
+	list-style: none;
+	padding: 0; margin: 0;
+}
+
+ul li {
+	display: inline-block;
+	padding: 10px 20px 10px 20px;
+	font-size: 20px;
+
+	transition: box-shadow .25s ease;
+	-webkit-transition: box-shadow .25s ease;
+	-moz-transition: box-shadow .25s ease;
+	-ms-transition: box-shadow .25s ease;
+	-o-transition: box-shadow .25s ease;
+}
+
+footer {
+	width: 100%; max-width: 960px;
+	padding: 20px 0 20px 0;
+}
+
+
+footer article {
+	padding: 10px 0 5px 0;
+	background-image: url('../images/ticks.png');
+	border-radius: 15px;
+	-webkit-column-count: 3;
+    -moz-column-count: 3;
+    column-count: 3;
+    text-align: center;
+    opacity: .75;
+
+}
+
+
+footer article:hover {
+	opacity: 1;
+}
+
+footer article p {
+	min-width: 201px;
+}
+
+footer article h4 {
+	display: none;
+}
+
+footer article a {
+	opacity: .7;
+}
+
+footer article a:hover {
+	opacity: .9;
+	color: rgba(250,0,90,1);
+}
+
+footer article img {
+	width: 21px;
+}
+
+
+ul li:hover {
+	box-shadow: 0 0 60px rgba(0, 0, 0, .17) inset;
+	cursor: pointer;
+}
+
+div.error_message {
+	color: red;
+	background-color: transparent;
+	padding:15px;
+	
+}
+
+span.confirmation_message {
+	color: green;
+	padding-bottom:15px;
+	display: block;
+}
+
+
+header>h1 {
+	line-height: 0.75;
+	color: #fff;
+	margin:0; padding: 20px;
+}
+
+header>h1 span {
+	font-size: 25px;
+	letter-spacing: 6px;
+	line-height: 1;
+	padding-left: 5px;
+}
+
+div#frame {
+	width: 60%; max-width: 600px; min-width: 480px;
+	margin: 0 auto;
+	padding-top: 50px; padding-bottom:  30px;
+}
+
+div#frame div#main {
+	border-radius: 15px;
+	overflow: hidden;
+	box-shadow: 0px 0px 75px rgba(0,0,0,.4);
+	text-shadow: 0 1px 0px rgba(255, 255, 255, .6);
+	border: 1px solid rgba(255,255,255,.75);
+}
+
+
+
+div#main nav#top, div#main nav#bottom {
+	width: 100%; /*height: 40px;*/
+}
+
+div#main nav#top {
+	background-color: rgba(255,255,255,.5);
+	border-bottom: 1px solid #fff;
+}
+
+	
+
+div#main nav#top ul {
+	height: 100%;
+
+}
+
+div#main nav#top ul li {
+	border-bottom: 1px solid #9fa1a3;
+}
+
+nav#top ul li:first-of-type {
+	border-right: 1px solid #9fa1a3;
+}
+
+nav#top ul li:nth-of-type(2) {
+	border-left: 1px solid #fff;
+}
+
+div#main nav#top ul li.active {
+	background-color: rgba(255,255,255,.5);
+
+}
+
+div#main nav#top ul li.active:hover {
+	transition: all .25s ease;
+	-webkit-transition: all .25s ease;
+	-moz-transition: all .25s ease;
+	-ms-transition: all .25s ease;
+	-o-transition: all .25s ease;
+}
+
+div#main nav#top li a, div#main nav#bottom li a {
+	display: block;
+	padding: 10px 20px 10px 20px;
+}
+
+div#main nav#top li, div#main nav#bottom li {
+	width: 50%; height:100%;
+	padding: 0;
+	float:left;
+}
+
+div#content {
+	background-image:url('../images/ticks.png');
+	padding:50px;
+	height: 0;
+}
+
+div#content h2 {
+	margin: 0; padding-bottom: 5px;
+}
+
+
+
+nav#bottom {
+	background-color: #d5d3d1;
+	border-top: 1px solid #9fa1a3;
+}
+
+nav#bottom ul li {
+	border-top: 1px solid #fff;
+}
+
+nav#bottom ul li:first-of-type {
+	border-right: 1px solid #9fa1a3;
+}
+
+nav#bottom ul li:nth-of-type(2) {
+	border-left: 1px solid #fff;
+}
+
+
+
+div#main div#content form:not(#search) {
+	width: 50%; height: 80%;
+	margin: 0 auto;
+}
+
+div#main div#content form#signup {
+	width: 80%;
+}
+
+form#signup input:nth-of-type(1), form#signup input:nth-of-type(2) {
+	width: 49%;
+	float:left;
+	display: inline-block;
+	margin-right: 0;
+}
+
+form#signup input:nth-of-type(2) {
+	float: right;
+}
+
+
+form#signup input:nth-of-type(8), form#signup input:nth-of-type(9) {
+	width: 49%;
+	float:left;
+	display: inline-block;
+	margin-right: 0;
+}
+
+form#signup input:nth-of-type(9) {
+	float: right;
+}
+
+
+form#signup input[type=date] {
+	height: 32px;
+}
+
+form input {
+	width: 100%;
+	margin: 3px; padding: 6px;
+	text-align: center;
+	font-size: 13px;
+}
+
+form input[type=password], form input[type=text], form input[type=date], form input[type=email], select, textarea {
+	border: 1px solid #a6a7aa;
+
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+
+	-moz-background-clip: padding;
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+	background-color: #fff;
+	
+	-moz-box-shadow: 0 1px 0 rgba(255,255,255,.66), inset 0 0 4px rgba(41,43,46,.20);
+	-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.66), inset 0 0 4px rgba(41,43,46,.20);
+	box-shadow: 0 1px 0 rgba(255,255,255,.66), inset 0 0 4px rgba(41,43,46,.20);
+
+}
+
+form input[type=submit], table.table-striped a/*, a.show_form*/ {
+	border: 1px solid #a7a8ab;
+
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+	
+	-moz-background-clip: padding;
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+	background-color: #fff;
+	
+	-moz-box-shadow: 0 1px 2px rgba(0,0,0,.17), inset 0 0 0 1px rgba(255,255,255,.33); 
+	-webkit-box-shadow: 0 1px 2px rgba(0,0,0,.17), inset 0 0 0 1px rgba(255,255,255,.33); 
+	box-shadow: 0 1px 2px rgba(0,0,0,.17), inset 0 0 0 1px rgba(255,255,255,.33); 
+	
+	background-image: -moz-linear-gradient(bottom, #dfe0e3 0%, #fff 100%); 
+	background-image: -o-linear-gradient(bottom, #dfe0e3 0%, #fff 100%); 
+	background-image: -webkit-linear-gradient(bottom, #dfe0e3 0%, #fff 100%); 
+	background-image: linear-gradient(bottom, #dfe0e3 0%, #fff 100%); 
+
+	margin-top: 10px;
+
+}
+
+form input[type=submit]:hover {
+	background-image: -moz-linear-gradient(bottom, #e1e1e1 0%, #d9d9d9 100%); 
+	background-image: -o-linear-gradient(bottom, #e1e1e1 0%, #d9d9d9 100%); 
+	background-image: -webkit-linear-gradient(bottom, #e1e1e1 0%, #d9d9d9 100%); 
+	background-image: linear-gradient(bottom, #e1e1e1 0%, #d9d9d9 100%);
+}
+
+form#signup input[type=password].incorrect_input, form#signup input.incorrect_input, input.incorrect_input, input[type=password].incorrect_input {
+	border: 1px solid #b20000;
+	box-shadow: 0 0 3px #b20000 inset;
+}
+
+form#signup input.correct_input, input.correct_input {
+	border: 1px solid #00dd4d;
+	box-shadow: 0 0 3px #00dd4d inset;
+}
+
+form#signup input[type=password].incorrect_input+input:not([type=submit]), input[type=password].incorrect_input+input:not([type=submit]) {
+	border: 1px solid #b20000;
+	box-shadow: 0 0 3px #b20000 inset;
+}
+
+form#signup p#output {
+	padding-top:25px;
+	line-height: 1.7;
+	color:#b20000;
+	text-align: left;
+}
+	
+
+.clearfix:after {
+  content:"";
+  display:table;
+  clear:both;
+}
